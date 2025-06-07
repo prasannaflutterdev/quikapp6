@@ -6,6 +6,9 @@ trap 'echo "❌ Android build failed on line $LINENO"; exit 1' ERR
 echo "🧹 Running flutter clean..."
 flutter clean
 
+echo "📦 Getting dependencies..."
+flutter pub get
+
 echo "🔍 Debugging Environment Variables..."
 env | grep -E '^(WEB_URL|PUSH_NOTIFY|PKG_NAME|APP_NAME|ORG_NAME|VERSION_NAME|VERSION_CODE|EMAIL_ID|IS_|LOGO_URL|BOTTOMMENU_|SPLASH|CERT_|KEY_STORE|CM_|PROFILE_URL|APPLE_TEAM_ID|APNS_|BUNDLE_ID|firebase_config)' | sort
 
