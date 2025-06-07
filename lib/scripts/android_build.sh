@@ -80,11 +80,11 @@ EOF
 dart_defines=$(get_dart_defines | xargs)
 
 echo "📦 Building APK..."
-flutter build apk --release $dart_defines --verbose
+flutter build apk --release --target=lib/main.dart $dart_defines --verbose
 echo "✅ APK build completed."
 
 echo "📦 Building AppBundle..."
-flutter build appbundle --release $dart_defines --verbose
+flutter build appbundle --release --target=lib/main.dart $dart_defines --verbose
 echo "✅ AppBundle build completed."
 
 APK_PATH="build/app/outputs/flutter-apk/app-release.apk"
