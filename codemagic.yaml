@@ -526,7 +526,7 @@ workflows:
       - name: Make scripts executable (safe)
         script: |
           echo "✅Setting All Script Files Executable with Safe Mode..."
-          if [ -d ./scripts ]; then chmod +x ./lib/scripts/*.sh; fi
+          if [ -d ./lib/scripts ]; then chmod +x ./lib/scripts/*.sh; fi
       - name: Update App Info (Name, Package, Version)
         script: |
           ./lib/scripts/debug_env.sh
@@ -567,12 +567,12 @@ workflows:
         - name: Make scripts executable (safe)
           script: |
             echo "✅Setting All Script Files Executable with Safe Mode..."
-            if [ -d ./scripts ]; then chmod +x ./lib/scripts/*.sh; fi
+            if [ -d ./lib/scripts ]; then chmod +x ./lib/scripts/*.sh; fi
         - name: Inject Keystore & Gradle Config
           script: |
             echo "✅Inject Keystore & Gradle Config..."
             ./lib/scripts/inject_keystore.sh 
-            ./write_gradle_config.sh
+            ./lib/scripts/write_gradle_config.sh
 
         - name: Update App Info (Name, Package, Version)
           script: |
@@ -620,7 +620,7 @@ workflows:
         script: |
           echo "✅Setting All Script Files Executable with Safe Mode..."
           
-          if [ -d ./scripts ]; then chmod +x ./lib/scripts/*.sh; fi
+          if [ -d ./lib/scripts ]; then chmod +x ./lib/scripts/*.sh; fi
       - *debug_env
       - *inject_keystore
       - *permission_android
@@ -793,8 +793,7 @@ workflows:
       - *debug_env
       - name: Make scripts executable (safe)
         script: |
-          if [ -d ./scripts ]; then chmod +x ./lib/scripts/*.sh; fi
-          if [ -d ./tools/scripts ]; then chmod +x ./lib/scripts/*.sh; fi
+          if [ -d ./lib/scripts ]; then chmod +x ./lib/scripts/*.sh; fi
       - *permission_ios
       - *change_proj_name
       - *update_package_names
@@ -856,7 +855,7 @@ workflows:
 
       - name: Add Push Notification entitlements if enabled
         script: |
-          chmod +x scripts/generate_entitlements.sh
+          chmod +x lib/scripts/generate_entitlements.sh
           ./lib/scripts/generate_entitlements.sh
 
 
