@@ -11,9 +11,13 @@ env | grep -E '^(WEB_URL|PUSH_NOTIFY|PKG_NAME|APP_NAME|ORG_NAME|VERSION_NAME|VER
 
 # 🧽 Sanitize variables to remove invisible Unicode characters (e.g., U+2060, U+200B)
 echo "🔧 Sanitizing environment variables..."
+
+clean_unicode() {
+  echo "$1" | LC_ALL=C tr -d "$(printf '\342\200\213\342\200\240\342\200\214\342\200\215')"
+}
+
 for var in $(compgen -e); do
-  clean_val=$(echo "${!var}" | tr -d '\u200b\u2060\u200c\u200d')
-  export "$var"="$clean_val"
+  export "$var"="$(clean_unicode "${!var}")"
 done
 
 # ✅ Dart defines generator
