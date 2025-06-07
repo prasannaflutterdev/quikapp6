@@ -5,7 +5,7 @@ echo "🛠️ Writing Gradle configuration files..."
 
 # 🧾 Write android/app/build.gradle.kts
 echo "🧾 Writing android/app/build.gradle.kts..."
-cat <<EOF > android/app/build.gradle.kts
+cat <<'EOF' > android/app/build.gradle.kts
 import java.util.Properties
 
 plugins {
@@ -95,7 +95,7 @@ EOF
 
 # 🧾 Write android/build.gradle.kts (project-level)
 echo "📁 Writing android/build.gradle.kts..."
-cat <<EOF > android/build.gradle.kts
+cat <<'EOF' > android/build.gradle.kts
 buildscript {
     repositories {
         google()
