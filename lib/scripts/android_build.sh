@@ -4,12 +4,19 @@ set -euo pipefail
 trap 'echo "❌ Android build failed on line $LINENO"; exit 1' ERR
 
 echo "🧹 Running flutter clean..."
-flutter clean --verbose
+flutter clean
 
 echo "🔍 Debugging Environment Variables..."
 env | grep -E '^(WEB_URL|PUSH_NOTIFY|PKG_NAME|APP_NAME|ORG_NAME|VERSION_NAME|VERSION_CODE|EMAIL_ID|IS_|LOGO_URL|BOTTOMMENU_|SPLASH|CERT_|KEY_STORE|CM_|PROFILE_URL|APPLE_TEAM_ID|APNS_|BUNDLE_ID|firebase_config)' | sort
 
-# Reusable Dart define block
+# 🧽 Sanitize variables to remove invisible Unicode characters (e.g., U+2060, U+200B)
+echo "🔧 Sanitizing environment variables..."
+for var in $(compgen -e); do
+  clean_val=$(echo "${!var}" | tr -d '\u200b\u2060\u200c\u200d')
+  export "$var"="$clean_val"
+done
+
+# ✅ Dart defines generator
 get_dart_defines() {
 cat <<EOF
 --dart-define=WEB_URL="${WEB_URL}"
@@ -65,7 +72,7 @@ cat <<EOF
 EOF
 }
 
-# Safely convert to flat args
+# 🔄 Flatten defines into space-separated list
 dart_defines=$(get_dart_defines | xargs)
 
 # 📦 Build APK
