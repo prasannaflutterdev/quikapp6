@@ -10,15 +10,18 @@ echo "🔍 Debugging Environment Variables..."
 env | grep -E '^(WEB_URL|PUSH_NOTIFY|PKG_NAME|APP_NAME|ORG_NAME|VERSION_NAME|VERSION_CODE|EMAIL_ID|IS_|LOGO_URL|BOTTOMMENU_|SPLASH|CERT_|KEY_STORE|CM_|PROFILE_URL|APPLE_TEAM_ID|APNS_|BUNDLE_ID|firebase_config)' | sort
 
 # 🧽 Sanitize variables to remove invisible Unicode characters (e.g., U+2060, U+200B)
-echo "🔧 Sanitizing environment variables..."
+echo "🔧 Cleaning invalid UTF-8 characters from env variables..."
 
-clean_unicode() {
-  echo "$1" | LC_ALL=C tr -d "$(printf '\342\200\213\342\200\240\342\200\214\342\200\215')"
+clean_utf8_env_vars() {
+  for var in $(compgen -e); do
+    original="${!var}"
+    # Clean invalid UTF-8 and invisible characters
+    cleaned=$(printf '%s' "$original" | iconv -c -f UTF-8 -t UTF-8 | tr -d '\u200b\u2060\u200c\u200d')
+    export "$var=$cleaned"
+  done
 }
 
-for var in $(compgen -e); do
-  export "$var"="$(clean_unicode "${!var}")"
-done
+clean_utf8_env_vars
 
 # ✅ Dart defines generator
 get_dart_defines() {
