@@ -593,12 +593,17 @@ workflows:
         - *set_launcher_icons
         - name: Set Android Permissions
           script: ./lib/scripts/inject_permissions_android.sh
-
-        - name: Build APK + AAB
+        - name: Build APK and AAB
           script: |
-            ./lib/scripts/android_build.sh
-            ./lib/scripts/build_apk.sh
-            ./lib/scripts/build_aab.sh
+              echo "🛠️ Starting the build process..."
+              ./lib/scripts/build_apk.sh
+              ./lib/scripts/build_aab.sh
+
+#        - name: Build APK + AAB
+#          script: |
+#            ./lib/scripts/android_build.sh
+#            ./lib/scripts/build_apk.sh
+#            ./lib/scripts/build_aab.sh
 
         - name: Validate APK Signing
           script: |

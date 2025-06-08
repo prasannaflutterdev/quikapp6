@@ -3,8 +3,8 @@
 set -euo pipefail
 trap 'echo "❌ Android AAB build failed on line $LINENO"; exit 1' ERR
 
-# Source the common setup script
-source "$(dirname "$0")/android_build.sh"
+## Source the common setup script
+#source "$(dirname "$0")/android_build.sh"
 
 echo "📦 Building AppBundle..."
 
