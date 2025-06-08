@@ -4,7 +4,7 @@ set -euo pipefail
 trap 'echo "❌ Android APK build failed on line $LINENO"; exit 1' ERR
 
 # Source the common setup script
-source "$(dirname "$0")/_setup.sh"
+source "$(dirname "$0")/android_build.sh"
 
 echo "📦 Building APK..."
 
