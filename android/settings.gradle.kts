@@ -7,8 +7,8 @@ pluginManagement {
         flutterSdkPath
     }
 
-    // This line was removed to fix the build error.
-    // includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
+    // This line MUST be present for the flutter-plugin-loader to be found.
+    includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
     repositories {
         google()

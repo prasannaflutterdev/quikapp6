@@ -11,7 +11,7 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     kotlin("android")
-    id("dev.flutter.flutter-gradle-plugin")
+    //id("dev.flutter.flutter-gradle-plugin")
 }
 
 val keystorePropertiesFile = File(rootProject.projectDir, "android/key.properties")
