@@ -267,7 +267,7 @@ definitions:
             --dart-define=CM_KEY_PASSWORD="$CM_KEY_PASSWORD" > flutter_build_apk.log
         if [ $? -ne 0 ]; then
         echo "❌ APK build failed"
-        cat flutter_build.log
+        cat flutter_build_apk.log
         exit 1
         fi
         echo "✅ APK build completed."
@@ -595,7 +595,11 @@ workflows:
           script: ./lib/scripts/inject_permissions_android.sh
 
         - name: Build APK + AAB
-          script: ./lib/scripts/android_build.sh
+          script: |
+            ./lib/scripts/android_build.sh
+            ./lib/scripts/build_apk.sh
+            ./lib/scripts/build_aab.sh
+
         - name: Validate APK Signing
           script: |
             echo "🔍 Validating APK signature..."
