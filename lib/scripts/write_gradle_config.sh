@@ -11,7 +11,6 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     kotlin("android")
-    //id("dev.flutter.flutter-gradle-plugin")
 }
 
 val keystorePropertiesFile = File(rootProject.projectDir, "android/key.properties")
@@ -96,6 +95,9 @@ EOF
 # 🧾 Write android/build.gradle.kts (project-level)
 echo "📁 Writing android/build.gradle.kts..."
 cat <<'EOF' > android/build.gradle.kts
+// The buildscript block is for older Gradle versions and can be simplified
+// for modern plugin management. The dependencies here are for the Android
+// and Kotlin plugins.
 buildscript {
     repositories {
         google()
@@ -107,9 +109,10 @@ buildscript {
     }
 }
 
-plugins {
-    id("dev.flutter.flutter-gradle-plugin") version "1.0.0" apply false
-}
+// THIS CONFLICTING PLUGINS BLOCK HAS BEEN REMOVED
+// plugins {
+//     id("dev.flutter.flutter-gradle-plugin") version "1.0.0" apply false
+// }
 
 allprojects {
     repositories {
