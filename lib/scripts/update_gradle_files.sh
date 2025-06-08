@@ -3,6 +3,18 @@
 set -e
 echo "🚀 Starting modern Gradle file injection..."
 
+# Set default versions if environment variables are not provided
+export VERSION_NAME="${VERSION_NAME:-1.0.0}"
+export VERSION_CODE="${VERSION_CODE:-$(date +%Y%m%d%H%M)}"
+export PKG_NAME="${PKG_NAME:-com.example.app}"
+export COMPILE_SDK_VERSION="${COMPILE_SDK_VERSION:-34}"
+export MIN_SDK_VERSION="${MIN_SDK_VERSION:-21}"
+export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-34}"
+
+echo "Using VERSION_NAME: $VERSION_NAME"
+echo "Using VERSION_CODE: $VERSION_CODE"
+echo "Using PKG_NAME: $PKG_NAME"
+
 # 1. Overwrite android/settings.gradle.kts
 echo "📝 Writing modern android/settings.gradle.kts..."
 cat <<'EOF' > android/settings.gradle.kts
@@ -49,38 +61,17 @@ EOF
 
 
 # 3. Overwrite android/app/build.gradle.kts (app-level)
-echo "📝 Writing modern android/app/build.gradle.kts with dynamic versioning..."
-cat <<'EOF' > android/app/build.gradle.kts
+echo "📝 Writing final android/app/build.gradle.kts..."
+cat <<EOF > android/app/build.gradle.kts
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// ============== START: VERSIONING LOGIC ==============
-// Reads versions from local.properties, which is populated by Flutter
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file("local.properties")
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader("UTF-8") { reader ->
-        localProperties.load(reader)
-    }
-}
-
-def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
-if (flutterVersionCode == null) {
-    flutterVersionCode = "1"
-}
-
-def flutterVersionName = localProperties.getProperty("flutter.versionName")
-if (flutterVersionName == null) {
-    flutterVersionName = "1.0"
-}
-// ============== END: VERSIONING LOGIC ==============
-
 android {
-    namespace = System.getenv("PKG_NAME") ?: "com.example.quikapp6"
-    compileSdk = 34
+    namespace = System.getenv("PKG_NAME")
+    compileSdk = (System.getenv("COMPILE_SDK_VERSION") ?: "34").toInt()
     ndkVersion = "25.1.8937393"
 
     compileOptions {
@@ -99,12 +90,11 @@ android {
     }
 
     defaultConfig {
-        applicationId = System.getenv("PKG_NAME") ?: "com.example.quikapp6"
-        minSdk = 21
-        targetSdk = 34
-        // Uses the dynamic version values defined above
-        versionCode = flutterVersionCode.toInteger()
-        versionName = flutterVersionName
+        applicationId = System.getenv("PKG_NAME")
+        minSdk = (System.getenv("MIN_SDK_VERSION") ?: "21").toInt()
+        targetSdk = (System.getenv("TARGET_SDK_VERSION") ?: "34").toInt()
+        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionName = System.getenv("VERSION_NAME")
     }
 
     buildTypes {
@@ -120,6 +110,80 @@ flutter {
 
 dependencies {}
 EOF
-[[ -f android/app/build.gradle.kts ]] && echo "✅ app/build.gradle.kts updated."
+[[ -f android/app/build.gradle.kts ]] && echo "✅ app/build.gradle.kts written with all configurations."
 
-echo "🎉 Gradle files successfully updated to modern configuration."
+echo "🎉 Gradle files successfully updated."
+#echo "📝 Writing modern android/app/build.gradle.kts with dynamic versioning..."
+#cat <<'EOF' > android/app/build.gradle.kts
+#plugins {
+#    id("com.android.application")
+#    id("org.jetbrains.kotlin.android")
+#    id("dev.flutter.flutter-gradle-plugin")
+#}
+#
+#// ============== START: VERSIONING LOGIC ==============
+#// Reads versions from local.properties, which is populated by Flutter
+#def localProperties = new Properties()
+#def localPropertiesFile = rootProject.file("local.properties")
+#if (localPropertiesFile.exists()) {
+#    localPropertiesFile.withReader("UTF-8") { reader ->
+#        localProperties.load(reader)
+#    }
+#}
+#
+#def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
+#if (flutterVersionCode == null) {
+#    flutterVersionCode = "1"
+#}
+#
+#def flutterVersionName = localProperties.getProperty("flutter.versionName")
+#if (flutterVersionName == null) {
+#    flutterVersionName = "1.0"
+#}
+#// ============== END: VERSIONING LOGIC ==============
+#
+#android {
+#    namespace = System.getenv("PKG_NAME") ?: "com.example.quikapp6"
+#    compileSdk = 34
+#    ndkVersion = "25.1.8937393"
+#
+#    compileOptions {
+#        sourceCompatibility = JavaVersion.VERSION_1_8
+#        targetCompatibility = JavaVersion.VERSION_1_8
+#    }
+#
+#    kotlinOptions {
+#        jvmTarget = "1.8"
+#    }
+#
+#    sourceSets {
+#        getByName("main") {
+#            java.srcDirs("src/main/kotlin")
+#        }
+#    }
+#
+#    defaultConfig {
+#        applicationId = System.getenv("PKG_NAME") ?: "com.example.quikapp6"
+#        minSdk = 21
+#        targetSdk = 34
+#        // Uses the dynamic version values defined above
+#        versionCode = flutterVersionCode.toInteger()
+#        versionName = flutterVersionName
+#    }
+#
+#    buildTypes {
+#        release {
+#            signingConfig = signingConfigs.getByName("release")
+#        }
+#    }
+#}
+#
+#flutter {
+#    source = "../.."
+#}
+#
+#dependencies {}
+#EOF
+#[[ -f android/app/build.gradle.kts ]] && echo "✅ app/build.gradle.kts updated."
+#
+#echo "🎉 Gradle files successfully updated to modern configuration."

@@ -568,21 +568,22 @@ workflows:
           script: |
             echo "✅Setting All Script Files Executable with Safe Mode..."
             if [ -d ./lib/scripts ]; then chmod +x ./lib/scripts/*.sh; fi
-        - name: Inject Keystore & Gradle Config
-          script: |
-            echo "✅Inject Keystore & Gradle Config..."
-            ./lib/scripts/inject_keystore.sh 
-            ./lib/scripts/update_gradle_files.sh
-#            ./lib/scripts/write_gradle_config.sh
+        - name: Update Gradle files to a modern, supported configuration
+          script: ./lib/scripts/update_gradle_files.sh
+        - name: Set and update version numbers
+          script: ./lib/scripts/update_version.sh
+        - name: Setup keystore for signing
+          script: ./lib/scripts/inject_keystore.sh
+        - name: Inject required Android permissions
+          script: ./lib/scripts/inject_permissions_android.sh
 
 
-        - name: Update App Info (Name, Package, Version)
+        - name: Update App Info (Name, Package, SDK Version)
           script: |
             ./lib/scripts/debug_env.sh
             ./lib/scripts/change_proj_name.sh
             ./lib/scripts/change_app_name.sh
             ./lib/scripts/update_package_name.sh
-            ./lib/scripts/update_version.sh
             ./lib/scripts/update_sdk_version.sh
         - name: Firebase And Push Notification Setup
           script: |
@@ -593,8 +594,7 @@ workflows:
             ./lib/scripts/get_logo.sh
             ./lib/scripts/get_splash.sh
         - *set_launcher_icons
-        - name: Set Android Permissions
-          script: ./lib/scripts/inject_permissions_android.sh
+
         - name: Build APK and AAB
           script: |
               echo "🛠️ Starting the build process..."
