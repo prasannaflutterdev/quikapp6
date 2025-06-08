@@ -572,7 +572,9 @@ workflows:
           script: |
             echo "✅Inject Keystore & Gradle Config..."
             ./lib/scripts/inject_keystore.sh 
-            ./lib/scripts/write_gradle_config.sh
+            ./lib/scripts/update_gradle_files.sh
+#            ./lib/scripts/write_gradle_config.sh
+
 
         - name: Update App Info (Name, Package, Version)
           script: |
