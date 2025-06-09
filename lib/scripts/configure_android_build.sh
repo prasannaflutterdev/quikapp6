@@ -7,7 +7,7 @@ echo "噫 Configuring a complete and modern Android build..."
 export PKG_NAME="${PKG_NAME:-com.example.app}"
 export COMPILE_SDK_VERSION="${COMPILE_SDK_VERSION:-35}"
 export MIN_SDK_VERSION="${MIN_SDK_VERSION:-21}"
-export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-35}"
+export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-34}"
 
 # --- Debugging to verify file locations ---
 echo "-------------------------------------------------"
