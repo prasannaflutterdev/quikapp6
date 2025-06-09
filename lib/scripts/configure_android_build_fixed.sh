@@ -3,14 +3,22 @@
 set -euo pipefail
 echo "噫 Configuring a complete and modern Android build..."
 
-# Set default values
+# --- START: SDK Version Configuration ---
+# As requested, these lines set the default SDK versions for your build.
 export PKG_NAME="${PKG_NAME:-com.example.app}"
 export COMPILE_SDK_VERSION="${COMPILE_SDK_VERSION:-35}"
 export MIN_SDK_VERSION="${MIN_SDK_VERSION:-21}"
-export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-34}"
+export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-35}"
+# --- END: SDK Version Configuration ---
 
 echo "Using PKG_NAME: $PKG_NAME"
 echo "Using COMPILE_SDK_VERSION: $COMPILE_SDK_VERSION"
+
+# Added debugging to verify file locations
+echo "-------------------------------------------------"
+echo "🔍 Listing contents of the /android/ directory to verify file locations..."
+ls -laR android/
+echo "-------------------------------------------------"
 
 # --- Common Gradle Configuration ---
 echo "統 Writing root Gradle files..."
@@ -44,12 +52,13 @@ tasks.register<Delete>("clean") {
 }
 EOF
 
-# --- Conditionally Generate app/build.gradle.kts with CORRECTED paths ---
+# --- Conditionally Generate app/build.gradle.kts with Correct Paths ---
 
 if [ "${PUSH_NOTIFY:-false}" = "true" ]; then
   echo "✅ PUSH_NOTIFY is true. Generating build.gradle.kts WITH Firebase."
   cat <<EOF > android/app/build.gradle.kts
 import java.util.Properties
+import java.io.FileInputStream
 import java.io.File
 
 plugins {
@@ -83,12 +92,11 @@ android {
 
     signingConfigs {
         create("release") {
-            // The path is now corrected to look in the correct directory
-            val keystorePropertiesFile = rootProject.file("key.properties") // <-- PATH CORRECTED
+            val keystorePropertiesFile = rootProject.file("../key.properties")
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
-                keystoreProperties.load(keystorePropertiesFile.reader())
-                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile")) // <-- PATH CORRECTED
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                storeFile = rootProject.file("../" + keystoreProperties.getProperty("storeFile"))
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
@@ -115,10 +123,11 @@ dependencies {
 }
 EOF
 else
-  # This block is for when PUSH_NOTIFY is false, also with corrected paths
+  # This block is for when PUSH_NOTIFY is false
   echo "🚫 PUSH_NOTIFY is false. Generating build.gradle.kts WITHOUT Firebase."
   cat <<EOF > android/app/build.gradle.kts
 import java.util.Properties
+import java.io.FileInputStream
 import java.io.File
 
 plugins {
@@ -151,11 +160,11 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("key.properties") // <-- PATH CORRECTED
+            val keystorePropertiesFile = rootProject.file("../key.properties")
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
-                keystoreProperties.load(keystorePropertiesFile.reader())
-                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile")) // <-- PATH CORRECTED
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                storeFile = rootProject.file("../" + keystoreProperties.getProperty("storeFile"))
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
