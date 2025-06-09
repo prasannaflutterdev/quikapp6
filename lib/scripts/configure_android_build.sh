@@ -62,12 +62,13 @@ android {
     compileSdk = (System.getenv("COMPILE_SDK_VERSION") ?: "34").toInt()
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11  # <-- CHANGE THIS
+        targetCompatibility = JavaVersion.VERSION_11  # <-- CHANGE THIS
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"  # <-- CHANGE THIS
     }
 
     defaultConfig {
@@ -105,6 +106,10 @@ android {
 
 flutter {
     source = "../.."
+}
+dependencies {
+    implementation("androidx.core:core-ktx:1.12.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4") // ✅ updated version
 }
 EOF
 
