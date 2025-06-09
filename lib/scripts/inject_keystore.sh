@@ -3,6 +3,12 @@
 set -e
 echo "🔐 Starting keystore injection..."
 
+# --- START: ADD THESE DEBUGGING LINES ---
+echo "✅ CM_KEY_ALIAS: ${CM_KEY_ALIAS}"
+echo "✅ CM_KEYSTORE_PASSWORD length: ${#CM_KEYSTORE_PASSWORD}"
+echo "✅ CM_KEY_PASSWORD length: ${#CM_KEY_PASSWORD}"
+# --- END: ADD THESE DEBUGGING LINES ---
+
 : "${KEY_STORE:?Missing KEY_STORE}"
 : "${CM_KEYSTORE_PASSWORD:?Missing CM_KEYSTORE_PASSWORD}"
 : "${CM_KEY_ALIAS:?Missing CM_KEY_ALIAS}"
