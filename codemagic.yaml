@@ -568,23 +568,35 @@ workflows:
           script: |
             echo "✅Setting All Script Files Executable with Safe Mode..."
             if [ -d ./lib/scripts ]; then chmod +x ./lib/scripts/*.sh; fi
-        - name: Update Gradle files to a modern, supported configuration
-          script: ./lib/scripts/update_gradle_files.sh
+        - name: Debug Environment Variables
+          script: |
+            ./lib/scripts/debug_env.sh
+        - name: Configure Android for Release Build
+          script: ./lib/scripts/configure_android_build.sh
+
+              # This script is still useful for updating pubspec.yaml and iOS versions.
         - name: Set and update version numbers
           script: ./lib/scripts/update_version.sh
+
+              # Keystore setup is still required for signing.
         - name: Setup keystore for signing
           script: ./lib/scripts/inject_keystore.sh
+#        - name: Update Gradle files to a modern, supported configuration
+#          script: ./lib/scripts/update_gradle_files.sh
+#        - name: Set and update version numbers
+#          script: ./lib/scripts/update_version.sh
+#        - name: Setup keystore for signing
+#          script: ./lib/scripts/inject_keystore.sh
         - name: Inject required Android permissions
           script: ./lib/scripts/inject_permissions_android.sh
 
 
-        - name: Update App Info (Name, Package, SDK Version)
+        - name: Change Project Name
           script: |
-            ./lib/scripts/debug_env.sh
             ./lib/scripts/change_proj_name.sh
-            ./lib/scripts/change_app_name.sh
-            ./lib/scripts/update_package_name.sh
-            ./lib/scripts/update_sdk_version.sh
+#            ./lib/scripts/change_app_name.sh
+#            ./lib/scripts/update_package_name.sh
+#            ./lib/scripts/update_sdk_version.sh
         - name: Firebase And Push Notification Setup
           script: |
             ./lib/scripts/get_json.sh
