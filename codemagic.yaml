@@ -597,6 +597,7 @@ workflows:
 #            ./lib/scripts/change_app_name.sh
 #            ./lib/scripts/update_package_name.sh
 #            ./lib/scripts/update_sdk_version.sh
+
         - name: Firebase And Push Notification Setup
           script: |
             ./lib/scripts/get_json.sh
