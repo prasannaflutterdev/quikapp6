@@ -571,6 +571,8 @@ workflows:
         - name: Debug Environment Variables
           script: |
             ./lib/scripts/debug_env.sh
+        - name: Setup keystore for signing
+          script: ./lib/scripts/inject_keystore.sh
         - name: Configure Android for Release Build
           script: ./lib/scripts/configure_android_build_fixed.sh
 #          configure_android_build.sh
@@ -580,8 +582,7 @@ workflows:
           script: ./lib/scripts/update_version.sh
 
               # Keystore setup is still required for signing.
-        - name: Setup keystore for signing
-          script: ./lib/scripts/inject_keystore.sh
+
 #        - name: Update Gradle files to a modern, supported configuration
 #          script: ./lib/scripts/update_gradle_files.sh
 #        - name: Set and update version numbers

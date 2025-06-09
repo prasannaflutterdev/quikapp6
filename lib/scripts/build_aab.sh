@@ -12,8 +12,8 @@ flutter pub get
 
 echo "📦 Building AppBundle..."
 
-# Use the explicit, multi-line build command for AAB
-flutter build appbundle --release --verbose --target=lib/main.dart \
+# Use the explicit, multi-line build command for AAB --verbose
+flutter build appbundle --release --target=lib/main.dart \
     --dart-define=WEB_URL="$WEB_URL" \
     --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
     --dart-define=PKG_NAME="$PKG_NAME" \
