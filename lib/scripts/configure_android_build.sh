@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -euo pipefail
-echo "🚀 Configuring a complete and modern Android build..."
+echo "噫 Configuring a complete and modern Android build..."
 
 # Set default values if environment variables are not provided
 export PKG_NAME="${PKG_NAME:-com.example.app}"
@@ -14,7 +14,7 @@ echo "Using MIN_SDK_VERSION: $MIN_SDK_VERSION"
 echo "Using TARGET_SDK_VERSION: $TARGET_SDK_VERSION"
 
 # 1. Overwrite android/settings.gradle.kts
-echo "📝 Writing android/settings.gradle.kts..."
+echo "統 Writing android/settings.gradle.kts..."
 cat <<EOF > android/settings.gradle.kts
 pluginManagement {
     includeBuild("$FLUTTER_ROOT/packages/flutter_tools/gradle")
@@ -34,7 +34,7 @@ include(":app")
 EOF
 
 # 2. Overwrite android/build.gradle.kts
-echo "📝 Writing android/build.gradle.kts..."
+echo "統 Writing android/build.gradle.kts..."
 cat <<'EOF' > android/build.gradle.kts
 allprojects {
     repositories {
@@ -48,7 +48,7 @@ tasks.register<Delete>("clean") {
 EOF
 
 # 3. Overwrite android/app/build.gradle.kts
-echo "📝 Writing final android/app/build.gradle.kts..."
+echo "統 Writing final android/app/build.gradle.kts..."
 cat <<EOF > android/app/build.gradle.kts
 plugins {
     id("com.android.application")
@@ -62,13 +62,12 @@ android {
     compileSdk = (System.getenv("COMPILE_SDK_VERSION") ?: "34").toInt()
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11  # <-- CHANGE THIS
-        targetCompatibility = JavaVersion.VERSION_11  # <-- CHANGE THIS
-        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_11 // <-- CHANGED
+        targetCompatibility = JavaVersion.VERSION_11 // <-- CHANGED
     }
 
     kotlinOptions {
-        jvmTarget = "11"  # <-- CHANGE THIS
+        jvmTarget = "11" // <-- CHANGED
     }
 
     defaultConfig {
@@ -107,10 +106,6 @@ android {
 flutter {
     source = "../.."
 }
-dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4") // ✅ updated version
-}
 EOF
 
-echo "🎉 All Android Gradle files configured successfully."
+echo "脂 All Android Gradle files configured successfully."
