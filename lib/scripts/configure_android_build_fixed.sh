@@ -7,12 +7,12 @@ echo "噫 Configuring a complete and modern Android build..."
 export PKG_NAME="${PKG_NAME:-com.example.app}"
 export COMPILE_SDK_VERSION="${COMPILE_SDK_VERSION:-35}"
 export MIN_SDK_VERSION="${MIN_SDK_VERSION:-21}"
-export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-35}"
+export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-34}"
 
 echo "Using PKG_NAME: $PKG_NAME"
 echo "Using COMPILE_SDK_VERSION: $COMPILE_SDK_VERSION"
 
-# --- Common Gradle Configuration (settings.gradle.kts and root build.gradle.kts) ---
+# --- Common Gradle Configuration ---
 echo "統 Writing root Gradle files..."
 cat <<EOF > android/settings.gradle.kts
 pluginManagement {
@@ -44,8 +44,7 @@ tasks.register<Delete>("clean") {
 }
 EOF
 
-# --- Conditionally Generate app/build.gradle.kts ---
-# This logic checks the PUSH_NOTIFY flag and includes the Google Services plugin ONLY if it's true.
+# --- Conditionally Generate app/build.gradle.kts with CORRECTED paths ---
 
 if [ "${PUSH_NOTIFY:-false}" = "true" ]; then
   echo "✅ PUSH_NOTIFY is true. Generating build.gradle.kts WITH Firebase."
@@ -57,7 +56,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services") // Firebase plugin included
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -84,14 +83,15 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("android/key.properties")
+            // The path is now corrected to look in the correct directory
+            val keystorePropertiesFile = rootProject.file("key.properties") // <-- PATH CORRECTED
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
                 keystoreProperties.load(keystorePropertiesFile.reader())
-                storeFile = rootProject.file("android/" + keystoreProperties["storeFile"])
-                storePassword = keystoreProperties["storePassword"] as String
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile")) // <-- PATH CORRECTED
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
             }
         }
     }
@@ -115,6 +115,7 @@ dependencies {
 }
 EOF
 else
+  # This block is for when PUSH_NOTIFY is false, also with corrected paths
   echo "🚫 PUSH_NOTIFY is false. Generating build.gradle.kts WITHOUT Firebase."
   cat <<EOF > android/app/build.gradle.kts
 import java.util.Properties
@@ -124,7 +125,6 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("dev.flutter.flutter-gradle-plugin")
-    // Firebase plugin is NOT included
 }
 
 android {
@@ -151,14 +151,14 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("android/key.properties")
+            val keystorePropertiesFile = rootProject.file("key.properties") // <-- PATH CORRECTED
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
                 keystoreProperties.load(keystorePropertiesFile.reader())
-                storeFile = rootProject.file("android/" + keystoreProperties["storeFile"])
-                storePassword = keystoreProperties["storePassword"] as String
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile")) // <-- PATH CORRECTED
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
             }
         }
     }
@@ -184,113 +184,3 @@ EOF
 fi
 
 echo "脂 All Android Gradle files configured successfully."
-##!/usr/bin/env bash
-#
-#set -euo pipefail
-#echo "噫 Configuring a complete and modern Android build..."
-#
-## Set default values if environment variables are not provided
-#export PKG_NAME="${PKG_NAME:-com.example.app}"
-#export COMPILE_SDK_VERSION="${COMPILE_SDK_VERSION:-34}"
-#export MIN_SDK_VERSION="${MIN_SDK_VERSION:-21}"
-#export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-34}"
-#
-#echo "Using PKG_NAME: $PKG_NAME"
-#echo "Using MIN_SDK_VERSION: $MIN_SDK_VERSION"
-#echo "Using TARGET_SDK_VERSION: $TARGET_SDK_VERSION"
-#
-## 1. Overwrite android/settings.gradle.kts
-#echo "統 Writing android/settings.gradle.kts..."
-#cat <<EOF > android/settings.gradle.kts
-#pluginManagement {
-#    includeBuild("$FLUTTER_ROOT/packages/flutter_tools/gradle")
-#    repositories {
-#        google()
-#        mavenCentral()
-#        gradlePluginPortal()
-#    }
-#}
-#plugins {
-#    id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-#    id("com.android.application") version "8.3.0" apply false
-#    id("org.jetbrains.kotlin.android") version "1.9.22" apply false
-#    id("com.google.gms.google-services") version "4.4.2" apply false
-#}
-#include(":app")
-#EOF
-#
-## 2. Overwrite android/build.gradle.kts
-#echo "統 Writing android/build.gradle.kts..."
-#cat <<'EOF' > android/build.gradle.kts
-#allprojects {
-#    repositories {
-#        google()
-#        mavenCentral()
-#    }
-#}
-#tasks.register<Delete>("clean") {
-#    delete(rootProject.buildDir)
-#}
-#EOF
-#
-## 3. Overwrite android/app/build.gradle.kts
-#echo "統 Writing final android/app/build.gradle.kts..."
-#cat <<EOF > android/app/build.gradle.kts
-#plugins {
-#    id("com.android.application")
-#    id("org.jetbrains.kotlin.android")
-#    id("dev.flutter.flutter-gradle-plugin")
-#    id("com.google.gms.google-services")
-#}
-#
-#android {
-#    namespace = System.getenv("PKG_NAME")
-#    compileSdk = (System.getenv("COMPILE_SDK_VERSION") ?: "34").toInt()
-#
-#    compileOptions {
-#        sourceCompatibility = JavaVersion.VERSION_11 // <-- CHANGED
-#        targetCompatibility = JavaVersion.VERSION_11 // <-- CHANGED
-#    }
-#
-#    kotlinOptions {
-#        jvmTarget = "11" // <-- CHANGED
-#    }
-#
-#    defaultConfig {
-#        applicationId = System.getenv("PKG_NAME")
-#        minSdk = (System.getenv("MIN_SDK_VERSION") ?: "21").toInt()
-#        targetSdk = (System.getenv("TARGET_SDK_VERSION") ?: "34").toInt()
-#        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
-#        versionName = System.getenv("VERSION_NAME") ?: "1.0"
-#    }
-#
-#    signingConfigs {
-#        create("release") {
-#            val keystorePropertiesFile = rootProject.file("android/key.properties")
-#            if (keystorePropertiesFile.exists()) {
-#                val keystoreProperties = java.util.Properties()
-#                keystoreProperties.load(keystorePropertiesFile.reader())
-#                storeFile = rootProject.file("android/" + keystoreProperties["storeFile"])
-#                storePassword = keystoreProperties["storePassword"] as String
-#                keyAlias = keystoreProperties["keyAlias"] as String
-#                keyPassword = keystoreProperties["keyPassword"] as String
-#            }
-#        }
-#    }
-#
-#    buildTypes {
-#        release {
-#            isMinifyEnabled = true
-#            isShrinkResources = true
-#            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-#            signingConfig = signingConfigs.getByName("release")
-#        }
-#    }
-#}
-#
-#flutter {
-#    source = "../.."
-#}
-#EOF
-#
-#echo "脂 All Android Gradle files configured successfully."
