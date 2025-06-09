@@ -3,18 +3,23 @@
 set -euo pipefail
 echo "噫 Configuring a complete and modern Android build..."
 
-# Set default values if environment variables are not provided
+# Set default values
 export PKG_NAME="${PKG_NAME:-com.example.app}"
-export COMPILE_SDK_VERSION="${COMPILE_SDK_VERSION:-34}"
+export COMPILE_SDK_VERSION="${COMPILE_SDK_VERSION:-35}"
 export MIN_SDK_VERSION="${MIN_SDK_VERSION:-21}"
-export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-34}"
+export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-35}"
 
-echo "Using PKG_NAME: $PKG_NAME"
-echo "Using MIN_SDK_VERSION: $MIN_SDK_VERSION"
-echo "Using TARGET_SDK_VERSION: $TARGET_SDK_VERSION"
+# --- Debugging to verify file locations ---
+echo "-------------------------------------------------"
+echo "🔍 Listing contents of the project root and /android/ directory..."
+echo "--- Project Root ---"
+ls -l
+echo "--- Android Directory ---"
+ls -l android/
+echo "-------------------------------------------------"
 
-# 1. Overwrite android/settings.gradle.kts
-echo "統 Writing android/settings.gradle.kts..."
+# --- Common Gradle Configuration ---
+echo "統 Writing root Gradle files..."
 cat <<EOF > android/settings.gradle.kts
 pluginManagement {
     includeBuild("$FLUTTER_ROOT/packages/flutter_tools/gradle")
@@ -33,8 +38,6 @@ plugins {
 include(":app")
 EOF
 
-# 2. Overwrite android/build.gradle.kts
-echo "統 Writing android/build.gradle.kts..."
 cat <<'EOF' > android/build.gradle.kts
 allprojects {
     repositories {
@@ -47,9 +50,15 @@ tasks.register<Delete>("clean") {
 }
 EOF
 
-# 3. Overwrite android/app/build.gradle.kts
-echo "統 Writing final android/app/build.gradle.kts..."
-cat <<EOF > android/app/build.gradle.kts
+# --- Conditionally Generate app/build.gradle.kts with CORRECTED paths ---
+
+if [ "${PUSH_NOTIFY:-false}" = "true" ]; then
+  echo "✅ PUSH_NOTIFY is true. Generating build.gradle.kts WITH Firebase."
+  cat <<EOF > android/app/build.gradle.kts
+import java.util.Properties
+import java.io.FileInputStream
+import java.io.File
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -59,36 +68,40 @@ plugins {
 
 android {
     namespace = System.getenv("PKG_NAME")
-    compileSdk = (System.getenv("COMPILE_SDK_VERSION") ?: "34").toInt()
+    compileSdk = (System.getenv("COMPILE_SDK_VERSION") ?: "35").toInt()
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11 // <-- CHANGED
-        targetCompatibility = JavaVersion.VERSION_11 // <-- CHANGED
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
-        jvmTarget = "11" // <-- CHANGED
+        jvmTarget = "11"
     }
 
     defaultConfig {
         applicationId = System.getenv("PKG_NAME")
         minSdk = (System.getenv("MIN_SDK_VERSION") ?: "21").toInt()
-        targetSdk = (System.getenv("TARGET_SDK_VERSION") ?: "34").toInt()
-        // These values will be replaced by your update_version.sh script for pubspec and iOS
+        targetSdk = (System.getenv("TARGET_SDK_VERSION") ?: "35").toInt()
         versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
         versionName = System.getenv("VERSION_NAME") ?: "1.0"
     }
 
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("android/key.properties")
+            // This corrected path tells Gradle to look in the correct 'android' directory
+            val keystorePropertiesFile = rootProject.file("key.properties")
             if (keystorePropertiesFile.exists()) {
-                val keystoreProperties = java.util.Properties()
-                keystoreProperties.load(keystorePropertiesFile.reader())
-                storeFile = rootProject.file("android/" + keystoreProperties["storeFile"])
-                storePassword = keystoreProperties["storePassword"] as String
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
+                val keystoreProperties = Properties()
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            } else {
+                // This will print an error if the file isn't found, helping debug
+                println("Warning: key.properties file not found at " + keystorePropertiesFile.absolutePath)
             }
         }
     }
@@ -106,6 +119,81 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}
 EOF
+else
+  # This block is for when PUSH_NOTIFY is false
+  echo "🚫 PUSH_NOTIFY is false. Generating build.gradle.kts WITHOUT Firebase."
+  cat <<EOF > android/app/build.gradle.kts
+import java.util.Properties
+import java.io.FileInputStream
+import java.io.File
+
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("dev.flutter.flutter-gradle-plugin")
+}
+
+android {
+    namespace = System.getenv("PKG_NAME")
+    compileSdk = (System.getenv("COMPILE_SDK_VERSION") ?: "35").toInt()
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
+    }
+
+    kotlinOptions {
+        jvmTarget = "11"
+    }
+
+    defaultConfig {
+        applicationId = System.getenv("PKG_NAME")
+        minSdk = (System.getenv("MIN_SDK_VERSION") ?: "21").toInt()
+        targetSdk = (System.getenv("TARGET_SDK_VERSION") ?: "35").toInt()
+        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionName = System.getenv("VERSION_NAME") ?: "1.0"
+    }
+
+    signingConfigs {
+        create("release") {
+            val keystorePropertiesFile = rootProject.file("key.properties")
+            if (keystorePropertiesFile.exists()) {
+                val keystoreProperties = Properties()
+                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            } else {
+                println("Warning: key.properties file not found at " + keystorePropertiesFile.absolutePath)
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+}
+
+flutter {
+    source = "../.."
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+}
+EOF
+fi
 
 echo "脂 All Android Gradle files configured successfully."

@@ -571,15 +571,38 @@ workflows:
         - name: Debug Environment Variables
           script: |
             ./lib/scripts/debug_env.sh
+     
+              # --- Project and Version Setup (Run First) ---
+        - name: Change Project Name
+          script: |
+                  ./lib/scripts/change_proj_name.sh
+        - name: Set and update version numbers
+          script: |
+                  # This script will now primarily handle pubspec.yaml and iOS versions.
+                  # The Android version is set by configure_android_build.sh from env vars.
+                  ./lib/scripts/update_version.sh
+              
+              # --- Asset and Icon Preparation ---
+        - name: Apply Custom Assets (Logo & Splash)
+          script: |
+                  ./lib/scripts/get_logo.sh
+                  ./lib/scripts/get_splash.sh
+        - *set_launcher_icons
+        - name: Firebase And Push Notification Setup
+          script: |
+            ./lib/scripts/get_json.sh
+            ./lib/scripts/inject_firebase_services.sh
+        - name: Inject required Android permissions
+          script: ./lib/scripts/inject_permissions_android.sh
+
         - name: Setup keystore for signing
           script: ./lib/scripts/inject_keystore.sh
         - name: Configure Android for Release Build
-          script: ./lib/scripts/configure_android_build_fixed.sh
-#          configure_android_build.sh
+          script: ./lib/scripts/configure_android_build.sh
 
               # This script is still useful for updating pubspec.yaml and iOS versions.
-        - name: Set and update version numbers
-          script: ./lib/scripts/update_version.sh
+#        - name: Set and update version numbers
+#          script: ./lib/scripts/update_version.sh
 
               # Keystore setup is still required for signing.
 
@@ -589,26 +612,22 @@ workflows:
 #          script: ./lib/scripts/update_version.sh
 #        - name: Setup keystore for signing
 #          script: ./lib/scripts/inject_keystore.sh
-        - name: Inject required Android permissions
-          script: ./lib/scripts/inject_permissions_android.sh
 
 
-        - name: Change Project Name
-          script: |
-            ./lib/scripts/change_proj_name.sh
+
+#        - name: Change Project Name
+#          script: |
+#            ./lib/scripts/change_proj_name.sh
 #            ./lib/scripts/change_app_name.sh
 #            ./lib/scripts/update_package_name.sh
 #            ./lib/scripts/update_sdk_version.sh
 
-        - name: Firebase And Push Notification Setup
-          script: |
-            ./lib/scripts/get_json.sh
-            ./lib/scripts/inject_firebase_services.sh
-        - name: Apply Custom Assets (Logo & Splash)
-          script: |
-            ./lib/scripts/get_logo.sh
-            ./lib/scripts/get_splash.sh
-        - *set_launcher_icons
+
+#        - name: Apply Custom Assets (Logo & Splash)
+#          script: |
+#            ./lib/scripts/get_logo.sh
+#            ./lib/scripts/get_splash.sh
+        
 
         - name: Build APK and AAB
           script: |
