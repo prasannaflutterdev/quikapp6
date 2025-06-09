@@ -73,6 +73,13 @@ keyAlias=$CM_KEY_ALIAS
 keyPassword=$CM_KEY_PASSWORD
 EOF
 [[ -f android/key.properties ]] && echo "✅ key.properties written"
+
+# --- START: NEW BLOCK TO DISPLAY FILE CONTENT ---
+echo "-------------------------------------------------"
+echo "🔍 Displaying contents of android/key.properties:"
+cat android/key.properties
+echo "-------------------------------------------------"
+# --- END: NEW BLOCK ---
 ##!/usr/bin/env bash
 #
 #set -e
