@@ -47,7 +47,7 @@ cat <<'EOF' > android/build.gradle.kts
 allprojects {
     repositories {
         google()
-        mavenCenter()
+        mavenCentral() # Corrected from mavenCentral()
     }
 }
 tasks.register<Delete>("clean") {
