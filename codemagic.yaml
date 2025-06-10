@@ -566,85 +566,35 @@ workflows:
       scripts:
         - name: Make scripts executable (safe)
           script: |
-            echo "✅Setting All Script Files Executable with Safe Mode..."
-            if [ -d ./lib/scripts ]; then chmod +x ./lib/scripts/*.sh; fi
+                  echo "✅Setting All Script Files Executable with Safe Mode..."
+                  if [ -d ./lib/scripts ]; then chmod +x ./lib/scripts/*.sh; fi
         - name: Debug Environment Variables
           script: |
-            ./lib/scripts/debug_env.sh
-     
-              # --- Project and Version Setup (Run First) ---
-        - name: Change Project Name
+                  ./lib/scripts/debug_env.sh
+        - name: Project and Version Setup
           script: |
                   ./lib/scripts/change_proj_name.sh
-        - name: Set and update version numbers
-          script: |
-                  # This script will now primarily handle pubspec.yaml and iOS versions.
-                  # The Android version is set by configure_android_build.sh from env vars.
                   ./lib/scripts/update_version.sh
-              
-              # --- Asset and Icon Preparation ---
-        - name: Apply Custom Assets (Logo & Splash)
+        - name: Apply Custom Assets and Icons
           script: |
                   ./lib/scripts/get_logo.sh
                   ./lib/scripts/get_splash.sh
-        - *set_launcher_icons
-        - name: Firebase And Push Notification Setup
+                  flutter pub run flutter_launcher_icons
+        - name: Prepare Android Project
           script: |
-            ./lib/scripts/get_json.sh
-#            ./lib/scripts/inject_firebase_services.sh
-        - name: Inject required Android permissions
-          script: ./lib/scripts/inject_permissions_android.sh
-
-        - name: Setup keystore for signing
-          script: ./lib/scripts/inject_keystore.sh
-        - name: Configure Android for Release Build
-          script: ./lib/scripts/configure_android_build.sh
-
-              # This script is still useful for updating pubspec.yaml and iOS versions.
-#        - name: Set and update version numbers
-#          script: ./lib/scripts/update_version.sh
-
-              # Keystore setup is still required for signing.
-
-#        - name: Update Gradle files to a modern, supported configuration
-#          script: ./lib/scripts/update_gradle_files.sh
-#        - name: Set and update version numbers
-#          script: ./lib/scripts/update_version.sh
-#        - name: Setup keystore for signing
-#          script: ./lib/scripts/inject_keystore.sh
-
-
-
-#        - name: Change Project Name
-#          script: |
-#            ./lib/scripts/change_proj_name.sh
-#            ./lib/scripts/change_app_name.sh
-#            ./lib/scripts/update_package_name.sh
-#            ./lib/scripts/update_sdk_version.sh
-
-
-#        - name: Apply Custom Assets (Logo & Splash)
-#          script: |
-#            ./lib/scripts/get_logo.sh
-#            ./lib/scripts/get_splash.sh
-        
-
+                  ./lib/scripts/get_json.sh
+                  ./lib/scripts/inject_permissions_android.sh
+                  ./lib/scripts/inject_keystore.sh
+                  ./lib/scripts/configure_android_build.sh
         - name: Build APK and AAB
           script: |
-              echo "🛠️ Starting the build process..."
-              ./lib/scripts/build_apk.sh
-              ./lib/scripts/build_aab.sh
-
-#        - name: Build APK + AAB
-#          script: |
-#            ./lib/scripts/android_build.sh
-#            ./lib/scripts/build_apk.sh
-#            ./lib/scripts/build_aab.sh
-
+                  echo "🛠️ Starting the build process..."
+                  ./lib/scripts/build_apk.sh
+                  ./lib/scripts/build_aab.sh
         - name: Validate APK Signing
           script: |
-            echo "🔍 Validating APK signature..."
-            $ANDROID_SDK_ROOT/build-tools/*/apksigner verify --verbose build/app/outputs/flutter-apk/app-release.apk
+                  echo "🔍 Validating APK signature..."
+                  $ANDROID_SDK_ROOT/build-tools/*/apksigner verify --verbose build/app/outputs/flutter-apk/app-release.apk
 
       artifacts:
         - build/**/outputs/apk/**/*.apk

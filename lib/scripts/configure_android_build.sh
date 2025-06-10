@@ -38,6 +38,7 @@ plugins {
 include(":app")
 EOF
 
+
 cat <<'EOF' > android/build.gradle.kts
 allprojects {
     repositories {
@@ -50,8 +51,7 @@ tasks.register<Delete>("clean") {
 }
 EOF
 
-# --- Conditionally Generate app/build.gradle.kts with CORRECTED paths ---
-
+# --- Conditionally Generate app/build.gradle.kts ---
 if [ "${PUSH_NOTIFY:-false}" = "true" ]; then
   echo "✅ PUSH_NOTIFY is true. Generating build.gradle.kts WITH Firebase."
   cat <<EOF > android/app/build.gradle.kts
@@ -90,7 +90,6 @@ android {
 
     signingConfigs {
         create("release") {
-            // This corrected path tells Gradle to look in the correct 'android' directory
             val keystorePropertiesFile = rootProject.file("key.properties")
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
@@ -99,9 +98,6 @@ android {
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
-            } else {
-                // This will print an error if the file isn't found, helping debug
-                println("Warning: key.properties file not found at " + keystorePropertiesFile.absolutePath)
             }
         }
     }
@@ -111,7 +107,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName("release") // Correctly uses the release signing config
         }
     }
 }
