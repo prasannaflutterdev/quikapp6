@@ -22,7 +22,7 @@ echo "-------------------------------------------------"
 echo "🧩 Writing root Gradle files..."
 cat <<EOF > android/settings.gradle.kts
 pluginManagement {
-    includeBuild("\$FLUTTER_ROOT/packages/flutter_tools/gradle")
+    includeBuild(System.getenv("FLUTTER_ROOT") + "/packages/flutter_tools/gradle")
     repositories {
         google()
         mavenCentral()
@@ -37,6 +37,8 @@ plugins {
 }
 include(":app")
 EOF
+
+echo "🧪 FLUTTER_ROOT is: $FLUTTER_ROOT"
 
 cat <<'EOF' > android/build.gradle.kts
 allprojects {
