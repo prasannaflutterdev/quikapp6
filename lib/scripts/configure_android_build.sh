@@ -8,7 +8,7 @@ echo "噫 Configuring a complete and modern Android build..."
 export PKG_NAME="${PKG_NAME:-com.example.app}"
 export COMPILE_SDK_VERSION="${COMPILE_SDK_VERSION:-35}"
 export MIN_SDK_VERSION="${MIN_SDK_VERSION:-21}"
-export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-34}"
+export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-35}"
 # --- END: SDK Version Configuration ---
 
 echo "Using PKG_NAME: $PKG_NAME"
@@ -101,13 +101,13 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("android/key.properties")
+            val keystorePropertiesFile = file("../key.properties") // Corrected path
             println("Debugging signing: key.properties path -> " + keystorePropertiesFile.absolutePath)
             println("Debugging signing: key.properties exists -> " + keystorePropertiesFile.exists())
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
                 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-                storeFile = rootProject.file("android/" + keystoreProperties.getProperty("storeFile"))
+                storeFile = file("../" + keystoreProperties.getProperty("storeFile")) // Corrected path
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
@@ -174,13 +174,13 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("android/key.properties")
+            val keystorePropertiesFile = file("../key.properties") // Corrected path
             println("Debugging signing: key.properties path -> " + keystorePropertiesFile.absolutePath)
             println("Debugging signing: key.properties exists -> " + keystorePropertiesFile.exists())
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
                 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-                storeFile = rootProject.file("android/" + keystoreProperties.getProperty("storeFile"))
+                storeFile = file("../" + keystoreProperties.getProperty("storeFile")) // Corrected path
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
