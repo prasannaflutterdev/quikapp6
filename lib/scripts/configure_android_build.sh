@@ -22,23 +22,26 @@ echo "-------------------------------------------------"
 
 # --- Common Gradle Configuration ---
 echo "🧩 Writing root Gradle files..."
-cat <<EOF > android/settings.gradle.kts
-pluginManagement {
-    includeBuild("$FLUTTER_ROOT/packages/flutter_tools/gradle")
-    repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
-plugins {
-    id("dev.flutter.flutter-plugin-loader") version "1.0.0"
-    id("com.android.application") version "8.3.0" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.22" apply false
-    id("com.google.gms.google-services") version "4.4.2" apply false
-}
-include(":app")
-EOF
+
+# REMOVE THE FOLLOWING BLOCK FOR settings.gradle.kts
+# This block was causing the issue by overwriting the correct settings.gradle.kts
+# cat <<EOF > android/settings.gradle.kts
+# pluginManagement {
+#     includeBuild(System.getenv("FLUTTER_ROOT") + "/packages/flutter_tools/gradle")
+#     repositories {
+#         google()
+#         mavenCentral()
+#         gradlePluginPortal()
+#     }
+# }
+# plugins {
+#     id("dev.flutter.flutter-plugin-loader") version "1.0.0"
+#     id("com.android.application") version "8.3.0" apply false
+#     id("org.jetbrains.kotlin.android") version "1.9.22" apply false
+#     id("com.google.gms.google-services") version "4.4.2" apply false
+# }
+# include(":app")
+# EOF
 
 cat <<'EOF' > android/build.gradle.kts
 allprojects {
