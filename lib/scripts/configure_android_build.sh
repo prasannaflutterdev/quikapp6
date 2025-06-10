@@ -192,4 +192,13 @@ dependencies {
 EOF
 fi
 
-echo "脂 All Android Gradle files configured successfully."
+# --- START: NEW VERIFICATION BLOCK ---
+# This block will print the final contents of the generated files as you requested.
+echo "\n\n--- Viewing android/app/build.gradle.kts ---"
+cat android/app/build.gradle.kts
+echo "\n\n--- Viewing android/build.gradle.kts ---"
+cat android/build.gradle.kts
+echo "\n\n--- Viewing android/settings.gradle.kts ---"
+cat android/settings.gradle.kts
+echo "\n\n--- Gradle file verification complete ---"
+# --- END: NEW VERIFICATION BLOCK ---
