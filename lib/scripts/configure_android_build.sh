@@ -21,7 +21,7 @@ ls -laR android/
 echo "-------------------------------------------------"
 
 # --- Common Gradle Configuration ---
-echo "統 Writing root Gradle files..."
+echo "🧩 Writing root Gradle files..."
 cat <<EOF > android/settings.gradle.kts
 pluginManagement {
     includeBuild("$FLUTTER_ROOT/packages/flutter_tools/gradle")
