@@ -39,10 +39,10 @@ allprojects {
     }
 }
 
-rootProject.buildDir = "../build"
-subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-}
+#rootProject.buildDir = "../build"
+#subprojects {
+#    project.buildDir = "${rootProject.buildDir}/${project.name}"
+#}
 
 tasks.register<Delete>("clean") {
     delete(rootProject.buildDir)
