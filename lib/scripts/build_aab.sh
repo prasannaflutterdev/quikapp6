@@ -3,12 +3,12 @@
 set -euo pipefail
 trap 'echo "❌ Android AAB build failed on line $LINENO"; exit 1' ERR
 
-flutter clean
-flutter pub get
+#flutter clean
+#flutter pub get
 
 echo "📦 Building AppBundle..."
-
-flutter build appbundle --release --target=lib/main.dart \
+#--target=lib/main.dart
+flutter build appbundle --release \
   --dart-define=WEB_URL="$WEB_URL" \
   --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
   --dart-define=PKG_NAME="$PKG_NAME" \

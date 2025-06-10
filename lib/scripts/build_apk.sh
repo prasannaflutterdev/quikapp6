@@ -7,8 +7,8 @@ flutter clean
 flutter pub get
 
 echo "📦 Building APK..."
-
-flutter build apk --release --target=lib/main.dart \
+# --target=lib/main.dart
+flutter build apk --release \
   --dart-define=WEB_URL="$WEB_URL" \
   --dart-define=PUSH_NOTIFY="$PUSH_NOTIFY" \
   --dart-define=PKG_NAME="$PKG_NAME" \
