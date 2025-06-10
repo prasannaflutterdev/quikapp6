@@ -8,7 +8,7 @@ echo "噫 Configuring a complete and modern Android build..."
 export PKG_NAME="${PKG_NAME:-com.example.app}"
 export COMPILE_SDK_VERSION="${COMPILE_SDK_VERSION:-35}"
 export MIN_SDK_VERSION="${MIN_SDK_VERSION:-21}"
-export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-35}"
+export TARGET_SDK_VERSION="${TARGET_SDK_VERSION:-34}"
 # --- END: SDK Version Configuration ---
 
 echo "Using PKG_NAME: $PKG_NAME"
@@ -45,8 +45,8 @@ echo "🧩 Writing root Gradle files..."
 
 cat <<'EOF' > android/build.gradle.kts
 plugins {
-    id("com.android.application") version "8.7.0" apply false // Corrected version to 8.7.0
-    id("org.jetbrains.kotlin.android") version "1.8.22" apply false // Corrected version to 1.8.22
+    id("com.android.application") version "8.7.0" apply false
+    id("org.jetbrains.kotlin.android") version "1.8.22" apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
@@ -102,6 +102,8 @@ android {
     signingConfigs {
         create("release") {
             val keystorePropertiesFile = rootProject.file("android/key.properties")
+            println("Debugging signing: key.properties path -> " + keystorePropertiesFile.absolutePath)
+            println("Debugging signing: key.properties exists -> " + keystorePropertiesFile.exists())
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
                 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -109,6 +111,9 @@ android {
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
+            } else {
+                // Explicitly log if key.properties does not exist
+                println("ERROR: key.properties file does NOT exist at " + keystorePropertiesFile.absolutePath)
             }
         }
     }
@@ -170,6 +175,8 @@ android {
     signingConfigs {
         create("release") {
             val keystorePropertiesFile = rootProject.file("android/key.properties")
+            println("Debugging signing: key.properties path -> " + keystorePropertiesFile.absolutePath)
+            println("Debugging signing: key.properties exists -> " + keystorePropertiesFile.exists())
             if (keystorePropertiesFile.exists()) {
                 val keystoreProperties = Properties()
                 keystoreProperties.load(FileInputStream(keystorePropertiesFile))
@@ -177,6 +184,9 @@ android {
                 storePassword = keystoreProperties.getProperty("storePassword")
                 keyAlias = keystoreProperties.getProperty("keyAlias")
                 keyPassword = keystoreProperties.getProperty("keyPassword")
+            } else {
+                // Explicitly log if key.properties does not exist
+                println("ERROR: key.properties file does NOT exist at " + keystorePropertiesFile.absolutePath)
             }
         }
     }
