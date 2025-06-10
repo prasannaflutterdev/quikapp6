@@ -90,19 +90,24 @@ android {
         versionName = System.getenv("VERSION_NAME") ?: "1.0"
     }
 
-    signingConfigs {
-        create("release") {
-            val keystorePropertiesFile = rootProject.file("key.properties")
-            if (keystorePropertiesFile.exists()) {
-                val keystoreProperties = Properties()
-                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
-                storePassword = keystoreProperties.getProperty("storePassword")
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
+    # Locate this section in lib/scripts/configure_android_build.sh
+    # (present in both PUSH_NOTIFY true and false blocks)
+
+        signingConfigs {
+            create("release") {
+                // ORIGINAL: val keystorePropertiesFile = rootProject.file("../key.properties")
+                val keystorePropertiesFile = rootProject.file("android/key.properties") # Corrected path
+                if (keystorePropertiesFile.exists()) {
+                    val keystoreProperties = Properties()
+                    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                    // ORIGINAL: storeFile = rootProject.file("../" + keystoreProperties.getProperty("storeFile"))
+                    storeFile = rootProject.file("android/" + keystoreProperties.getProperty("storeFile")) # Corrected path
+                    storePassword = keystoreProperties.getProperty("storePassword")
+                    keyAlias = keystoreProperties.getProperty("keyAlias")
+                    keyPassword = keystoreProperties.getProperty("keyPassword")
+                }
             }
         }
-    }
 
     buildTypes {
         release {
@@ -158,21 +163,24 @@ android {
         versionName = System.getenv("VERSION_NAME") ?: "1.0"
     }
 
-    signingConfigs {
-        create("release") {
-            val keystorePropertiesFile = rootProject.file("key.properties")
-            if (keystorePropertiesFile.exists()) {
-                val keystoreProperties = Properties()
-                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
-                storePassword = keystoreProperties.getProperty("storePassword")
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
-            } else {
-                println("Warning: key.properties file not found at " + keystorePropertiesFile.absolutePath)
+    # Locate this section in lib/scripts/configure_android_build.sh
+    # (present in both PUSH_NOTIFY true and false blocks)
+
+        signingConfigs {
+            create("release") {
+                // ORIGINAL: val keystorePropertiesFile = rootProject.file("../key.properties")
+                val keystorePropertiesFile = rootProject.file("android/key.properties") # Corrected path
+                if (keystorePropertiesFile.exists()) {
+                    val keystoreProperties = Properties()
+                    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+                    // ORIGINAL: storeFile = rootProject.file("../" + keystoreProperties.getProperty("storeFile"))
+                    storeFile = rootProject.file("android/" + keystoreProperties.getProperty("storeFile")) # Corrected path
+                    storePassword = keystoreProperties.getProperty("storePassword")
+                    keyAlias = keystoreProperties.getProperty("keyAlias")
+                    keyPassword = keystoreProperties.getProperty("keyPassword")
+                }
             }
         }
-    }
 
     buildTypes {
         release {
